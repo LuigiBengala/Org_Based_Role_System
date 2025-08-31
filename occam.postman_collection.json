@@ -1,0 +1,635 @@
+{
+	"info": {
+		"_postman_id": "562e2f11-89ce-433a-a6c0-213ade47a45c",
+		"name": "occam",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27147955"
+	},
+	"item": [
+		{
+			"name": "localhost:8000/createorganization",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"org1\",\n    \"name\": \"Occam Research Lab\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/createorganization",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"createorganization"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/organizations",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/organizations",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"organizations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/organizations/org1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/organizations/org1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"organizations",
+						"org1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/organizations/org1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Occam Research Lab\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/organizations/org1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"organizations",
+						"org1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/users",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"teste7\",\n    \"email\": \"teste8@gmail.com\",\n    \"password\": \"123\",\n    \"role\": \"participant\",\n    \"org\": \"org2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/users",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/users/teste",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/users/teste4",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"teste4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/users/teste",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/users/teste",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"teste"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/users/teste",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"org\": \"org1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/users/teste",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"teste"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/login",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "teste",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "123",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/login",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/createstudy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"study2\",\n    \"title\": \"Cognitive Load Measurement\",\n    \"description\": \"Reaction times under different stimuli\",\n    \"org\": \"org2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/createstudy",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"createstudy"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/studies",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/studies",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"studies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/studies/study1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/studies/study1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"studies",
+						"study1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/studies/study1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Cognitive Load Measurement\",\n    \"description\": \"Reaction times under different stimuli\",\n    \"org\": \"org2\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/studies/study2",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"studies",
+						"study2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/sessions",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"session2\",\n    \"study_id\": \"study2\",\n    \"participant_id\": \"teste5\",\n    \"scheduled_time\": \"2025-07-22T09:00:00Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/sessions",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"sessions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/sessions",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/sessions",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"sessions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/sessions/session1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/sessions/session2",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"sessions",
+						"session2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/sessions/session1",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGVzdGUiLCJleHAiOjE3NTY1OTk5NjR9.XV_7-rGsW_BsvXgjuuhhC_DjCr9uuoQ8sYWSHiUElaE",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"participant_id\": \"teste\",\n    \"scheduled_time\": \"2025-07-22T09:00:00\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/sessions/session1",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"sessions",
+						"session1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8000/studies/study2",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8000/studies/study2",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"studies",
+						"study2"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
