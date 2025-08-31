@@ -1,0 +1,36 @@
+from sqlalchemy import Column, String, Enum, ForeignKey
+from sqlalchemy.sql.sqltypes import TIMESTAMP
+
+from .database import Base
+from .schemas import RoleEnum
+
+class Organization(Base):
+    __tablename__ = "organizations"
+    
+    id = Column(String, primary_key=True, nullable=False)
+    name = Column(String, nullable=False)
+    
+class Study(Base):
+    __tablename__ = "studies"
+    
+    id = Column(String, primary_key=True, nullable=False)
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=False)
+    org = Column(ForeignKey("organizations.id"), nullable=False)
+    
+class Session(Base):
+    __tablename__ = "sessions"
+    
+    id = Column(String, primary_key=True, nullable=False)
+    study_id = Column(ForeignKey("studies.id"), nullable=False)
+    participant_id = Column(ForeignKey("users.id"), nullable=False)
+    scheduled_time = Column(TIMESTAMP, nullable=False)
+    
+class User(Base):
+    __tablename__ = "users"
+    
+    id = Column(String, primary_key=True, nullable=False)
+    email = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
+    role = Column(Enum(RoleEnum), nullable=False, default=RoleEnum.participant)
+    org = Column(ForeignKey("organizations.id"), nullable=True)
