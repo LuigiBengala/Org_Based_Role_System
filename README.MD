@@ -21,11 +21,6 @@ docker run --env-file .env occamassigment:latest
 
 ## Using Fast api built-in tools
 
-Use the following command to install the packages needed to run the api:
-```bash
-pip install -r requirements.txt
-```
-
 (Optional): Use the following command to create a virtual environment:
 ```bash
 python -m venv env
@@ -38,6 +33,11 @@ source myvenv/bin/activate
 
 #On Windows
 env\Scripts\activate
+```
+
+Use the following command to install the packages needed to run the api:
+```bash
+pip install -r requirements.txt
 ```
 
 Use the built-in FastAPI command to run the api:
