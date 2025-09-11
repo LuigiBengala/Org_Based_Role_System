@@ -36,7 +36,7 @@ def get_org(
 
 
 @router.post(
-    "/createorganization",
+    "/organizations",
     status_code=status.HTTP_201_CREATED,
     response_model=schemas.Organization,
 )
@@ -62,7 +62,7 @@ def create_org(
 )
 def update_org(
     id: str,
-    org: schemas.OrganizationEdit,
+    org_data: schemas.OrganizationEdit,
     db: Session = Depends(get_db),
     current_user: str = Depends(oauth2.get_current_user),
 ):
@@ -71,17 +71,14 @@ def update_org(
 
     org_query = db.query(models.Organization).filter(models.Organization.id == id)
 
-    print(org_query)
-
     db_org = org_query.first()
 
-    print(db_org)
     if db_org is None:
         raise HTTPException(
-            status_code=404, detail=f"Organization with id {id} does not exist"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"No organization with the following id: {id}, was found!"
         )
 
-    org_query.update(org.model_dump(), synchronize_session=False)
+    org_query.update(org_data.model_dump(), synchronize_session=False)
     db.commit()
 
     return org_query.first()

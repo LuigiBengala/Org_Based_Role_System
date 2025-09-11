@@ -9,7 +9,7 @@ router = APIRouter(tags=["Session"])
 
 @router.get("/sessions", response_model=List[schemas.SessionOut])
 def get_sessions(
-    db: Session = Depends(get_db), current_user: str = Depends(oauth2.get_current_user)
+    db: Session = Depends(get_db), current_user: models.User = Depends(oauth2.get_current_user)
 ):
 
     user_role = current_user.role
@@ -39,7 +39,7 @@ def get_sessions(
 def get_session(
     id: str,
     db: Session = Depends(get_db),
-    current_user: str = Depends(oauth2.get_current_user),
+    current_user: models.User = Depends(oauth2.get_current_user),
 ):
 
     user_role = current_user.role
@@ -77,14 +77,14 @@ def get_session(
     "/sessions", status_code=status.HTTP_201_CREATED, response_model=schemas.SessionOut
 )
 def create_session(
-    org: schemas.SessionCreate,
+    session_data: schemas.SessionCreate,
     db: Session = Depends(get_db),
     current_user: str = Depends(oauth2.get_current_user),
 ):
 
     check_user_role(current_user.role, schemas.RoleEnum.admin)
 
-    new_session = models.Session(**org.model_dump())
+    new_session = models.Session(**session_data.model_dump())
     db.add(new_session)
     db.commit()
     db.refresh(new_session)
@@ -93,10 +93,10 @@ def create_session(
 
 
 @router.delete("/sessions/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_study(
+def delete_session(
     id: str,
     db: Session = Depends(get_db),
-    current_user: str = Depends(oauth2.get_current_user),
+    current_user: models.User = Depends(oauth2.get_current_user),
 ):
     check_user_role(current_user.role, schemas.RoleEnum.admin)
 
@@ -115,11 +115,11 @@ def delete_study(
 
 
 @router.put("/sessions/{id}", response_model=schemas.SessionOut)
-def update_study(
+def update_session(
     id: str,
-    org: schemas.SessionEdit,
+    session_data: schemas.SessionEdit,
     db: Session = Depends(get_db),
-    current_user: str = Depends(oauth2.get_current_user),
+    current_user: models.User = Depends(oauth2.get_current_user),
 ):
 
     user_role = current_user.role
@@ -149,7 +149,7 @@ def update_study(
         )
 
     db.query(models.Session).filter(models.Session.id == id).update(
-        org.model_dump(exclude_none=True, exclude_unset=True), synchronize_session=False
+        session_data.model_dump(exclude_none=True, exclude_unset=True), synchronize_session=False
     )
 
     db.commit()
