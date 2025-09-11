@@ -1,8 +1,9 @@
 import os
-
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
+
 from dotenv import load_dotenv
+from fastapi import FastAPI
+
 from . import models, schemas, utils
 from .database import engine, SessionLocal
 from .routers import organization, user, auth, study, session
@@ -33,6 +34,7 @@ async def lifespan(app: FastAPI):
         db.add(admin_user)
         db.commit()
         db.refresh(admin_user)
+        db.close()
     yield
     
 app = FastAPI(lifespan=lifespan)
