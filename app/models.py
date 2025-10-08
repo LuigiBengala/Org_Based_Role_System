@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Enum, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
 from .database import Base
@@ -16,8 +17,11 @@ class Study(Base):
     id = Column(String, primary_key=True, nullable=False)
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
-    org = Column(ForeignKey("organizations.id"), nullable=False)
     
+    organization_id = Column(String, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False)
+    
+    organization = relationship("Organization")
+
 class Session(Base):
     __tablename__ = "sessions"
     
@@ -33,4 +37,7 @@ class User(Base):
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
     role = Column(Enum(RoleEnum), nullable=False, default=RoleEnum.participant)
-    org = Column(ForeignKey("organizations.id"), nullable=True)
+    
+    organization_id = Column(String, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=True)
+    
+    organization = relationship("Organization")

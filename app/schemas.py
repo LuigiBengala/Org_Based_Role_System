@@ -4,6 +4,16 @@ from typing import Optional
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
+class RoleEnum(str, Enum):
+    admin = "admin"
+    participant = "participant"
+    research_assistant = "Research Assistant"
+    study_coordinator = "Study Coordinator" 
+
+'''
+    #! Organization
+'''
+
 class OrganizationBase(BaseModel):
     id: str
     name: str
@@ -17,32 +27,27 @@ class OrganizationEdit(BaseModel):
 class Organization(OrganizationBase):
     class Config:
         from_attributes = True
+
+'''
+    #! User
+'''
         
-class RoleEnum(str, Enum):
-    admin = "admin"
-    participant = "participant"
-    research_assistant = "Research Assistant"
-    study_coordinator = "Study Coordinator" 
-        
-class UserBase(BaseModel):
+class UserCreate(BaseModel):
     id: str
     email: EmailStr
     password: str
     role: RoleEnum
-    org: str
-
-class UserCreate(UserBase):
-    pass
+    organization: str
 
 class UserEdit(BaseModel):
     role: RoleEnum = None
-    org: str = None
+    organization: str = None
     
 class UserOut(BaseModel):
     id: str
     email: EmailStr
     role: RoleEnum
-    org: str | None
+    organization: str | None
     class Config:
         from_attributes = True
 
@@ -50,23 +55,20 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
     
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-    
-class TokenData(BaseModel):
-    id: Optional[str] = None
+'''
+    #! Study
+'''
     
 class StudyCreate(BaseModel):
     id: str
     title: str
     description: str
-    org: str
+    organization: str
 
 class StudyOut(BaseModel):
     title: str
     description: str
-    org: str
+    organization: str
     
     class Config:
         from_attributes = True
@@ -74,8 +76,11 @@ class StudyOut(BaseModel):
 class StudyEdit(BaseModel):
     title: str = None
     description: str = None
-    org: str = None
+    organization: str = None
 
+'''
+    #! Session
+'''
 
 class SessionCreate(BaseModel):
     id: str
@@ -83,10 +88,21 @@ class SessionCreate(BaseModel):
     participant_id: str
     scheduled_time: datetime
 
-class SessionOut(SessionCreate):
+class SessionOut(BaseModel):
     class Config:
         from_attributes = True
         
 class SessionEdit(BaseModel):
     participant_id: str = None
     scheduled_time: datetime = None
+
+'''
+    #! Token
+'''
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    
+class TokenData(BaseModel):
+    id: Optional[str] = None

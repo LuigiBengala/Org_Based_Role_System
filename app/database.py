@@ -1,20 +1,11 @@
-import os
-
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, event
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from .config import settings
 
+SQLALCHEMY_DATABASE_URL = f'postgresql+psycopg://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/{settings.database_name}'
 
-load_dotenv()
-
-engine = create_engine(os.getenv("DATABASE_URL"), echo=True)
-
-@event.listens_for(engine, "connect")
-def set_sqlite_pragma(api_connection, connection_record):
-    cursor = api_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
