@@ -22,4 +22,4 @@ app.include_router(session.router)
 
 @app.get("/")
 async def main():
-    return {"message": "Hellow world!"}
+    return {"message": "Hello World!"}
