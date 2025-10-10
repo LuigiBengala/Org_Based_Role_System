@@ -32,10 +32,10 @@ def create_user(user_data: schemas.UserCreate, db: Session = Depends(get_db), cu
     
     check_user_role(current_user.role, schemas.RoleEnum.admin)
 
-    user_data = user_data.model_dump()
-    user_data['password'] = utils.hash(user_data.password)
-    new_user = models.User(**user_data)
+    hashed_password = utils.hash(user_data.password)
+    user_data.password = hashed_password
     
+    new_user = models.User(**user_data.model_dump())
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

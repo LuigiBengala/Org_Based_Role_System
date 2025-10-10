@@ -37,17 +37,17 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     role: RoleEnum
-    organization: str
+    organization_id: str
 
 class UserEdit(BaseModel):
     role: RoleEnum = None
-    organization: str = None
+    organization_id: str = None
     
 class UserOut(BaseModel):
     id: str
     email: EmailStr
     role: RoleEnum
-    organization: str | None
+    organization_id: str | None
     class Config:
         from_attributes = True
 
