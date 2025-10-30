@@ -2,7 +2,6 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app import schemas
 from app.main import app
 from app.config import settings
 from app.database import get_db
@@ -46,191 +45,85 @@ def client(session):
         role=RoleEnum.admin,
         organization=None,
     )
-    
-    org1 = models.Organization(
-        id = "org1",
-        name = "Organization1"
-    )
-    
-    org2 = models.Organization(
-        id = "org2",
-        name = "Organization1"
-    )
+
     sysadmin.password = utils.hash(sysadmin.password)
-    session.add_all([sysadmin, org1, org2])
+    session.add_all([sysadmin])
     session.commit()
-    
+
     app.dependency_overrides[get_db] = override_get_db
 
     yield TestClient(app)
 
 
 """
-    #! Test users data
-"""
-
-
-"""
-    #! Research Assistant
-"""
-
-
-@pytest.fixture
-def test_user_research_assistant1(client):
-    user_data = {
-        "id": "assistant_test1",
-        "email": "assistant_test1@gmail.com",
-        "password": "123",
-        "role": RoleEnum.research_assistant,
-        "organization_id": "org1",
-    }
-
-    response = client.post("/users/", json=user_data)
-
-    assert response.status_code == 201
-    new_user = response.json()
-    new_user["password"] = user_data["password"]
-    return new_user
-
-
-@pytest.fixture
-def test_user_research_assistant2(client):
-    user_data = {
-        "id": "assistant_test2",
-        "email": "assistant_test2@gmail.com",
-        "password": "123",
-        "role": RoleEnum.research_assistant,
-        "organization_id": "org2",
-    }
-
-    response = client.post("/users/", json=user_data)
-
-    assert response.status_code == 201
-    new_user = response.json()
-    new_user["password"] = user_data["password"]
-    return new_user
-
-
-"""
-    #! Study Coordinator
-"""
-
-
-@pytest.fixture
-def test_user_coordinator1(client):
-    user_data = {
-        "id": "coordinator_test1",
-        "email": "coordinator_test1@gmail.com",
-        "password": "123",
-        "role": RoleEnum.study_coordinator,
-        "organization_id": "org1",
-    }
-
-    response = client.post("/users/", json=user_data)
-
-    assert response.status_code == 201
-    new_user = response.json()
-    new_user["password"] = user_data["password"]
-    return new_user
-
-
-@pytest.fixture
-def test_user_coordinator2(client):
-    user_data = {
-        "id": "coordinator_test2",
-        "email": "coordinator_test2@gmail.com",
-        "password": "123",
-        "role": RoleEnum.study_coordinator,
-        "organization_id": "org2",
-    }
-
-    response = client.post("/users/", json=user_data)
-
-    assert response.status_code == 201
-    new_user = response.json()
-    new_user["password"] = user_data["password"]
-    return new_user
-
-
-"""
-    #! Participant
-"""
-
-
-@pytest.fixture
-def test_user_participant1(client):
-    user_data = {
-        "id": "participant_test1",
-        "email": "participant_test1@gmail.com",
-        "password": "123",
-        "role": RoleEnum.participant,
-        "organization_id": "org1",
-    }
-
-    response = client.post("/users/", json=user_data)
-
-    assert response.status_code == 201
-    new_user = response.json()
-    new_user["password"] = user_data["password"]
-    return new_user
-
-
-@pytest.fixture
-def test_user_participant2(client):
-    user_data = {
-        "id": "participant_test2",
-        "email": "participant_test2@gmail.com",
-        "password": "123",
-        "role": RoleEnum.participant,
-        "organization_id": "org2",
-    }
-
-    response = client.post("/users/", json=user_data)
-
-    assert response.status_code == 201
-    new_user = response.json()
-    new_user["password"] = user_data["password"]
-    return new_user
-
-
-"""
     Token
 """
 
-@pytest.fixture
-def authorized_admin(client):
-    response = client.post(
-        "/login", data={"username": "sysadmin_test", "password": "123"}
-    )
-
-    login_response = schemas.Token(**response.json())
-    return login_response.access_token
 
 @pytest.fixture
-def token():
-    return create_access_token({"user_id": "sysadmin"})
+def admin_token():
+    return create_access_token({"user_id": "sysadmin_test"})
+
 
 @pytest.fixture
-def authorized_client(client, token):
-    client.headers = {**client.headers, "Authorization": f"Bearer {token}"}
+def authorized_admin(client, admin_token):
+    client.headers = {**client.headers, "Authorization": f"Bearer {admin_token}"}
 
     return client
 
+"""
+
+    #! Orgs
+
+"""
+
 
 @pytest.fixture
-def test_study(session):
-    study_data = [
+def test_organization(session):
+    org_data = [
         {
-            "id": "study_test_1",
-            "title": "Study test org 1",
-            "description": "description test",
-            "organization": "org1",
+            "id": "org1",
+            "name": "Organization1"
         },
         {
-            "id": "study_test_2",
+            "id": "org2",
+            "name": "Organization2"
+        }
+    ]
+    
+    def create_org_model(orgs):
+        return models.Organization(**orgs)
+    
+    org_map = map(create_org_model, org_data)
+    organizations = list(org_map)
+
+    session.add_all(organizations)
+    session.commit()
+
+    organizations = session.query(models.Organization).all()
+    return organizations
+    
+
+"""
+
+    #! Study
+
+"""
+
+@pytest.fixture
+def test_study(session, test_organization):
+    study_data = [
+        {
+            "id": "study_test_org1",
+            "title": "Study test org 1",
+            "description": "description test",
+            "organization_id": "org1",
+        },
+        {
+            "id": "study_test_org2",
             "title": "Study test org 2",
             "description": "description test",
-            "organization": "org2",
+            "organization_id": "org2",
         },
     ]
 
@@ -246,26 +139,33 @@ def test_study(session):
     studies = session.query(models.Study).all()
     return studies
 
+ 
+"""
+
+    #! Sessions
+
+"""
+
 
 @pytest.fixture
-def test_session(session, test_user_participant1, test_user_participant2):
+def test_session(session, test_user_participant1, test_user_participant2, test_study):
     session_data = [
         {
             "id": "session_test_1",
-            "study_id": "study_test_1",
+            "study_id": "study_test_org1",
             "participant_id": test_user_participant1["id"],
-            "scheduled_time": "01-01-2000",
+            "scheduled_time": "2023-01-01T10:00:00",
         },
         {
             "id": "session_test_2",
-            "study_id": "study_test_2",
+            "study_id": "study_test_org2",
             "participant_id": test_user_participant2["id"],
-            "scheduled_time": "01-01-2000",
+            "scheduled_time": "2023-01-01T10:00:00",
         },
     ]
 
-    def create_session_model(session):
-        return models.Session(**session)
+    def create_session_model(sessions):
+        return models.Session(**sessions)
 
     session_map = map(create_session_model, session_data)
     sessions = list(session_map)
@@ -275,3 +175,186 @@ def test_session(session, test_user_participant1, test_user_participant2):
 
     sessions = session.query(models.Session).all()
     return sessions
+
+
+"""
+    #! Test users data
+"""
+
+"""
+    #! Research Assistant
+"""
+
+
+@pytest.fixture
+def test_user_research_assistant1(authorized_admin, test_organization):
+    user_data = {
+        "id": "assistant_test1",
+        "email": "assistant_test1@gmail.com",
+        "password": "123",
+        "role": RoleEnum.research_assistant,
+        "organization_id": "org1",
+    }
+
+    response = authorized_admin.post("/users/", json=user_data)
+
+    assert response.status_code == 201
+    new_user = response.json()
+    new_user["password"] = user_data["password"]
+    return new_user
+
+
+@pytest.fixture
+def test_user_research_assistant2(authorized_admin, test_organization):
+    user_data = {
+        "id": "assistant_test2",
+        "email": "assistant_test2@gmail.com",
+        "password": "123",
+        "role": RoleEnum.research_assistant,
+        "organization_id": "org2",
+    }
+
+    response = authorized_admin.post("/users/", json=user_data)
+
+    assert response.status_code == 201
+    new_user = response.json()
+    new_user["password"] = user_data["password"]
+    return new_user
+
+
+"""
+    #! Study Coordinator
+"""
+
+
+@pytest.fixture
+def test_user_coordinator1(authorized_admin, test_organization):
+    user_data = {
+        "id": "coordinator_test1",
+        "email": "coordinator_test1@gmail.com",
+        "password": "123",
+        "role": RoleEnum.study_coordinator,
+        "organization_id": test_organization[0].id,
+    }
+
+    response = authorized_admin.post("/users/", json=user_data)
+
+    assert response.status_code == 201
+    new_user = response.json()
+    new_user["password"] = user_data["password"]
+    return new_user
+
+
+@pytest.fixture
+def test_user_coordinator2(authorized_admin, test_organization):
+    user_data = {
+        "id": "coordinator_test2",
+        "email": "coordinator_test2@gmail.com",
+        "password": "123",
+        "role": RoleEnum.study_coordinator,
+        "organization_id": "org2",
+    }
+
+    response = authorized_admin.post("/users/", json=user_data)
+
+    assert response.status_code == 201
+    new_user = response.json()
+    new_user["password"] = user_data["password"]
+    return new_user
+
+
+"""
+    #! Participant
+"""
+
+
+@pytest.fixture
+def test_user_participant1(authorized_admin, test_organization):
+    user_data = {
+        "id": "participant_test1",
+        "email": "participant_test1@gmail.com",
+        "password": "123",
+        "role": RoleEnum.participant,
+        "organization_id": "org1",
+    }
+
+    response = authorized_admin.post("/users/", json=user_data)
+
+    assert response.status_code == 201
+    new_user = response.json()
+    new_user["password"] = user_data["password"]
+    return new_user
+
+@pytest.fixture
+def test_user_participant1_2(authorized_admin, test_organization):
+    user_data = {
+        "id": "participant_test1_2",
+        "email": "participant_test1_2@gmail.com",
+        "password": "123",
+        "role": RoleEnum.participant,
+        "organization_id": "org1",
+    }
+
+    response = authorized_admin.post("/users/", json=user_data)
+
+    assert response.status_code == 201
+    new_user = response.json()
+    new_user["password"] = user_data["password"]
+    return new_user
+
+
+@pytest.fixture
+def test_user_participant2(authorized_admin, test_organization):
+    user_data = {
+        "id": "participant_test2",
+        "email": "participant_test2@gmail.com",
+        "password": "123",
+        "role": RoleEnum.participant,
+        "organization_id": "org2",
+    }
+
+    response = authorized_admin.post("/users/", json=user_data)
+
+    assert response.status_code == 201
+    new_user = response.json()
+    new_user["password"] = user_data["password"]
+    return new_user
+
+@pytest.fixture
+def test_user_participant2_2(authorized_admin, test_organization):
+    user_data = {
+        "id": "participant_test2_2",
+        "email": "participant_test2_2@gmail.com",
+        "password": "123",
+        "role": RoleEnum.participant,
+        "organization_id": "org2",
+    }
+
+    response = authorized_admin.post("/users/", json=user_data)
+
+    assert response.status_code == 201
+    new_user = response.json()
+    new_user["password"] = user_data["password"]
+    return new_user
+
+
+def token(user_id: str):
+    return create_access_token({"user_id": user_id})
+
+
+@pytest.fixture
+def authorized_client(client):
+    def _authorized_client(user_id: str):
+        user_token = token(user_id)
+        fresh_client = TestClient(app)
+        fresh_client.headers = {"Authorization": f"Bearer {user_token}"}
+
+        return fresh_client
+
+    return _authorized_client
+# @pytest.fixture
+# def authorized_participant1(client, test_user_participant1):
+#     user_token = token(test_user_participant1["id"])
+#     client.headers = {**client.headers, "Authorization": f"Bearer {user_token}"}
+
+#     return client

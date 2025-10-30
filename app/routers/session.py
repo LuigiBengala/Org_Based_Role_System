@@ -26,7 +26,7 @@ def get_sessions(
     ]:
         query = query.join(
             models.Study, models.Session.study_id == models.Study.id
-        ).filter(models.Study.org == current_user.org)
+        ).filter(models.Study.organization_id == current_user.organization_id)
     elif user_role == schemas.RoleEnum.participant:
         query = query.filter(models.Session.participant_id == current_user.id)
     else:
@@ -56,7 +56,7 @@ def get_session(
     ]:
         query = query.join(
             models.Study, models.Session.study_id == models.Study.id
-        ).filter(models.Study.org == current_user.org)
+        ).filter(models.Study.organization_id == current_user.organization_id)
     elif user_role == schemas.RoleEnum.participant:
         query = query.filter(models.Session.participant_id == current_user.id)
     else:
@@ -100,16 +100,18 @@ def delete_session(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(oauth2.get_current_user),
 ):
+    
     check_user_role(current_user.role, schemas.RoleEnum.admin)
-
+    
     session_query = db.query(models.Session).filter(models.Session.id == id)
+    session = session_query.first()
 
-    if session_query.first() is None:
+    if session is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Session with the following id: {id}, does not exist",
         )
-
+    
     session_query.delete(synchronize_session=False)
     db.commit()
 
@@ -136,7 +138,7 @@ def update_session(
     ]:
         query = query.join(
             models.Study, models.Session.study_id == models.Study.id
-        ).filter(models.Study.org == current_user.org)
+        ).filter(models.Study.organization_id == current_user.organization_id)
     else:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions"
@@ -147,7 +149,7 @@ def update_session(
     if not session:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Session with the following id: {id}, does not exist",
+            detail=f"No session with the following id: {id}, was found",
         )
 
     db.query(models.Session).filter(models.Session.id == id).update(

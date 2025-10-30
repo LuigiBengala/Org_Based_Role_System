@@ -25,11 +25,11 @@ def get_studies(
         schemas.RoleEnum.research_assistant,
         schemas.RoleEnum.study_coordinator,
     ]:
-        query = query.filter(models.Study.org == current_user.org)
+        query = query.filter(models.Study.organization_id == current_user.organization_id)
     elif user_role == schemas.RoleEnum.participant:
         query = query.join(
             models.Session, models.Study.id == models.Session.study_id
-        ).filter(models.Study.org == current_user.org)
+        ).filter(models.Study.organization_id == current_user.organization_id)
     else:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions!"
@@ -54,7 +54,7 @@ def get_study(
         schemas.RoleEnum.research_assistant,
         schemas.RoleEnum.study_coordinator,
     ]:
-        query = query.filter(models.Study.org == current_user.org)
+        query = query.filter(models.Study.organization_id == current_user.organization_id)
     elif user_role == schemas.RoleEnum.participant:
         query = query.join(
             models.Session, models.Study.id == models.Session.study_id
@@ -89,11 +89,7 @@ def create_study(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions!"
         )
-
-    if (
-        user_role == schemas.RoleEnum.study_coordinator
-        and current_user.org != study_data.org
-    ):
+    if user_role == schemas.RoleEnum.study_coordinator and current_user.organization_id != study_data.organization_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Current user is not part of this organization!",
@@ -115,15 +111,17 @@ def delete_study(
 ):
     check_user_role(current_user.role, schemas.RoleEnum.admin)
 
-    study_query = db.query(models.Study).filter(models.Study.id == id)
+    query = db.query(models.Study).filter(models.Study.id == id)
 
-    if study_query.first() is None:
+    db_study = query.first()
+    
+    if not db_study:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"No study with the following id: {id}, was found!",
         )
 
-    study_query.delete(synchronize_session=False)
+    query.delete(synchronize_session=False)
     db.commit()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -140,34 +138,32 @@ def update_study(
     current_user: models.User = Depends(oauth2.get_current_user),
 ):
     user_role = current_user.role
-
+    
+    query = db.query(models.Study).filter(models.Study.id == id)
+    
     if user_role not in [schemas.RoleEnum.admin, schemas.RoleEnum.study_coordinator]:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions!"
         )
 
-    if (
-        user_role == schemas.RoleEnum.study_coordinator
-        and current_user.org != study_data.org
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Current user is not part of this organization!",
-        )
-
-    study_query = db.query(models.Study).filter(models.Study.id == id)
-    db_study = study_query.first()
-
-    if db_study is None:
+    db_study = query.first()
+    
+    if not db_study:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"No study with the following id: {id}, was found!",
+            detail=f"No study with the following id: {id}, was found",
+        )
+    
+    if user_role == schemas.RoleEnum.study_coordinator and current_user.organization_id != db_study.organization_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Study not found!",
         )
 
-    study_query.update(
+    query.update(
         study_data.model_dump(exclude_none=True, exclude_unset=True),
         synchronize_session=False,
     )
     db.commit()
 
-    return study_query.first()
+    return query.first()

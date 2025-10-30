@@ -63,12 +63,12 @@ class StudyCreate(BaseModel):
     id: str
     title: str
     description: str
-    organization: str
+    organization_id: str
 
 class StudyOut(BaseModel):
     title: str
     description: str
-    organization: str
+    organization_id: str
     
     class Config:
         from_attributes = True
@@ -76,7 +76,7 @@ class StudyOut(BaseModel):
 class StudyEdit(BaseModel):
     title: str = None
     description: str = None
-    organization: str = None
+    organization_id: str = None
 
 '''
     #! Session
@@ -88,7 +88,7 @@ class SessionCreate(BaseModel):
     participant_id: str
     scheduled_time: datetime
 
-class SessionOut(BaseModel):
+class SessionOut(SessionCreate):
     class Config:
         from_attributes = True
         

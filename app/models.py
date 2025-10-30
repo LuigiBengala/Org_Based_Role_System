@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Enum, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import TIMESTAMP
+from sqlalchemy.sql.expression import text
 
 from .database import Base
 from .schemas import RoleEnum
@@ -28,7 +29,7 @@ class Session(Base):
     id = Column(String, primary_key=True, nullable=False)
     study_id = Column(ForeignKey("studies.id"), nullable=False)
     participant_id = Column(ForeignKey("users.id"), nullable=False)
-    scheduled_time = Column(TIMESTAMP, nullable=False)
+    scheduled_time = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
     
 class User(Base):
     __tablename__ = "users"
