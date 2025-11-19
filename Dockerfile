@@ -1,15 +1,11 @@
 FROM python:3.13-alpine
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
-COPY requirements.txt /app/
+COPY requirements.txt ./
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY .env /app/
+COPY . .
 
-COPY /app /app/
-
-EXPOSE 8000
-
-CMD [ "fastapi", "run", "main.py" ]
+CMD [ "fastapi", "run", "app/main.py", "--port", "8000" ]
