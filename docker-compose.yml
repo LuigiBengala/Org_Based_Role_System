@@ -1,6 +1,6 @@
 services:
   api:
-    image: occam_assigment
+    image: org_based_role_system
     ports:
       - 8001:8000
     depends_on:
