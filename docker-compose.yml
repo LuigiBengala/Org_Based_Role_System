@@ -6,15 +6,6 @@ services:
     depends_on:
       - postgres
     command: sh -c "sleep 5 && alembic upgrade head && fastapi run/main.py --pot 8000"
-    environment:
-      - DATABASE_HOSTNAME=postgres
-      - DATABASE_PORT=5432
-      - DATABASE_PASSWORD=123
-      - DATABASE_NAME=occam
-      - DATABASE_USERNAME=postgres
-      - SECRET_KEY=acdfe931c56df2c82228340f99aedf1aeaef12c3368721389a34c19df88593b7
-      - ALGORITHM=HS256
-      - ACCESS_TOKEN_EXPIRE_MINUTES=1200
 
   postgres:
     image: postgres
