@@ -1,17 +1,19 @@
 from typing import List
 
-from fastapi import HTTPException, status, Depends, APIRouter
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from .. import models, schemas, oauth2
-from ..utils import check_user_role
+from .. import models, oauth2, schemas
 from ..database import get_db
+from ..utils import check_user_role
 
 router = APIRouter(tags=["Orgs"])
 
+
 @router.get("/organizations", response_model=List[schemas.Organization])
 def get_orgs(
-    db: Session = Depends(get_db), current_user: str = Depends(oauth2.get_current_user)
+    db: Session = Depends(get_db),
+    current_user=Depends(oauth2.get_current_user),
 ):
     check_user_role(current_user.role, schemas.RoleEnum.admin)
     orgs = db.query(models.Organization).all()
@@ -47,7 +49,6 @@ def create_org(
     db: Session = Depends(get_db),
     current_user: str = Depends(oauth2.get_current_user),
 ):
-
     check_user_role(current_user.role, schemas.RoleEnum.admin)
 
     new_org = models.Organization(**org.model_dump())
@@ -68,7 +69,6 @@ def update_org(
     db: Session = Depends(get_db),
     current_user: str = Depends(oauth2.get_current_user),
 ):
-
     check_user_role(current_user.role, schemas.RoleEnum.admin)
 
     org_query = db.query(models.Organization).filter(models.Organization.id == id)
@@ -77,7 +77,8 @@ def update_org(
 
     if db_org is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"No organization with the following id: {id}, was found!"
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"No organization with the following id: {id}, was found!",
         )
 
     org_query.update(org_data.model_dump(), synchronize_session=False)

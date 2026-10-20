@@ -2,16 +2,15 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from app.main import app
-from app.config import settings
-from app.database import get_db
-from app.database import Base
-from app.oauth2 import create_access_token
+
 from app import models, utils
+from app.config import settings
+from app.database import Base, get_db
+from app.main import app
+from app.oauth2 import create_access_token
 from app.schemas import RoleEnum
 
-
-SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg://{settings.database_username}:{settings.database_password}@{settings.database_hostname}:{settings.database_port}/test_{settings.database_name}"
+SQLALCHEMY_DATABASE_URL = f"postgresql+psycopg://{settings.DATABASE_USERNAME}:{settings.DATABASE_PASSWORD}@{settings.DATABASE_HOSTNAME}:{settings.DATABASE_PORT}/test_{settings.DATABASE_NAME}"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
@@ -71,6 +70,7 @@ def authorized_admin(client, admin_token):
 
     return client
 
+
 """
 
     #! Orgs
@@ -81,19 +81,13 @@ def authorized_admin(client, admin_token):
 @pytest.fixture
 def test_organization(session):
     org_data = [
-        {
-            "id": "org1",
-            "name": "Organization1"
-        },
-        {
-            "id": "org2",
-            "name": "Organization2"
-        }
+        {"id": "org1", "name": "Organization1"},
+        {"id": "org2", "name": "Organization2"},
     ]
-    
+
     def create_org_model(orgs):
         return models.Organization(**orgs)
-    
+
     org_map = map(create_org_model, org_data)
     organizations = list(org_map)
 
@@ -102,13 +96,14 @@ def test_organization(session):
 
     organizations = session.query(models.Organization).all()
     return organizations
-    
+
 
 """
 
     #! Study
 
 """
+
 
 @pytest.fixture
 def test_study(session, test_organization):
@@ -139,7 +134,7 @@ def test_study(session, test_organization):
     studies = session.query(models.Study).all()
     return studies
 
- 
+
 """
 
     #! Sessions
@@ -285,6 +280,7 @@ def test_user_participant1(authorized_admin, test_organization):
     new_user["password"] = user_data["password"]
     return new_user
 
+
 @pytest.fixture
 def test_user_participant1_2(authorized_admin, test_organization):
     user_data = {
@@ -320,6 +316,7 @@ def test_user_participant2(authorized_admin, test_organization):
     new_user["password"] = user_data["password"]
     return new_user
 
+
 @pytest.fixture
 def test_user_participant2_2(authorized_admin, test_organization):
     user_data = {
@@ -352,6 +349,8 @@ def authorized_client(client):
         return fresh_client
 
     return _authorized_client
+
+
 # @pytest.fixture
 # def authorized_participant1(client, test_user_participant1):
 #     user_token = token(test_user_participant1["id"])

@@ -3,46 +3,54 @@ name: Build and test code
 on: [push]
 
 jobs:
-    job1:
-        environment:
-            name: testing
+  job1:
+    environment:
+      name: testing
+    env:
+      DATABASE_HOSTNAME: ${{secrets.DATABASE_HOSTNAME}}
+      DATABASE_PORT: ${{secrets.DATABASE_PORT}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+      DATABASE_NAME: ${{secrets.DATABASE_NAME}}
+      DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME}}
+      SECRET_KEY: ${{secrets.SECRET_KEY}}
+      ALGORITHM: ${{secrets.ALGORITHM}}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${{secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
+
+    services:
+      postgres:
+        image: postgres
         env:
-            DATABASE_HOSTNAME: ${{secrets.DATABASE_HOSTNAME}}
-            DATABASE_PORT: ${{secrets.DATABASE_PORT}}
-            DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
-            DATABASE_NAME: ${{secrets.DATABASE_NAME}}
-            DATABASE_USERNAME: ${{secrets.DATABASE_USERNAME}}
-            SECRET_KEY: ${{secrets.SECRET_KEY}}
-            ALGORITHM: ${{secrets.ALGORITHM}}
-            ACCESS_TOKEN_EXPIRE_MINUTES: ${{secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
+          POSTGRES_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+          POSTGRES_DB: test_${{secrets.DATABASE_NAME}}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
-        services:
-            postgres:
-                image: postgres
-                env:
-                    POSTGRES_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
-                    POSTGRES_DB: test_${{secrets.DATABASE_NAME}}
-                ports:
-                    - 5432:5432
-                options: >-
-                    --health-cmd pg_isready
-                    --health-interval 10s
-                    --health-timeout 5s
-                    --health-retries 5
-
-        runs-on: ubuntu-latest
-        steps:
-            - name: pulling git repo
-              uses: actions/checkout@v2
-            - name: Install python version 3.13
-              uses: actions/setup-python@v6
-              with:
-                  python-version: "3.13"
-            - name: update pip
-              run: python -m pip install --upgrade pip
-            - name: install all dependencies
-              run: pip install -r requirements.txt
-            - name: test with pytest
-              run: |
-                  pip install pytest
-                  pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: pulling git repo
+        uses: actions/checkout@v2
+      - name: Install python version 3.13
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: update pip
+        run: python -m pip install --upgrade pip
+      - name: install all dependencies
+        run: pip install -r requirements.txt
+      - name: test with pytest
+        run: |
+          pip install pytest
+          pytest
+      - name: Docker Compose
+        uses: docker/setup-compose-action@v2
+        with:
+          version: latest
+      - name: Build the stack
+        run: docker compose up -d
+      - name: Test Docker Compose
+        run: docker run --network container:orgbased-api appropriate/curl -s --retry 10 --retry-connrefused http://localhost:5000/

@@ -1,5 +1,6 @@
 import pytest
 from jose import jwt
+
 from app import schemas
 from app.config import settings
 
@@ -14,8 +15,8 @@ def test_sysadmin_login(client):
     login_response = schemas.Token(**response.json())
     payload = jwt.decode(
         login_response.access_token,
-        settings.secret_key,
-        algorithms=[settings.algorithm],
+        settings.SECRET_KEY,
+        algorithms=[settings.ALGORITHM],
     )
     id = payload.get("user_id")
 
@@ -149,9 +150,7 @@ def test_user_creation_with_study_coordinator(
 
 
 #! Test user creation with participant
-def test_user_creation_with_participant(
-    authorized_client, test_user_participant1
-):
+def test_user_creation_with_participant(authorized_client, test_user_participant1):
     data = {
         "id": "test_participant_org2",
         "email": "participant_test_org2@gmail.com",
@@ -165,7 +164,9 @@ def test_user_creation_with_participant(
 
     assert response.status_code == 404
 
+
 #! Test delete user
+
 
 def test_unauthorized_delete_user(client):
     response = client.delete("/users/1")
