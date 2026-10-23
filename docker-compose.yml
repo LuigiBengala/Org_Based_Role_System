@@ -1,19 +1,30 @@
 services:
-  api:
-    image: org_based_role_system
+  web:
+    build: .
     ports:
-      - 8001:8000
+      - "8000:8000"
+    env_file:
+      - .env
     depends_on:
-      - postgres
-    command: sh -c "sleep 5 && alembic upgrade head && fastapi run/main.py --pot 8000"
+      db:
+        condition: service_healthy
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
-  postgres:
-    image: postgres
+  db:
+    image: postgres:16-alpine
     environment:
-      - POSTGRES_PASSWORD=123
-      - POSTGRES_DB=occam
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USERNAME}
+    ports:
+      - "5434:5432"
     volumes:
-      - occam-data:/var/lib/postgresql/data
-    
+      - orgbase-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
-  occam-data:
+  orgbase-data:
