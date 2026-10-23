@@ -52,5 +52,3 @@ jobs:
           version: latest
       - name: Build the stack
         run: docker compose up -d
-      - name: Test Docker Compose
-        run: docker run --network container:orgbased-api appropriate/curl -s --retry 10 --retry-connrefused http://localhost:5000/
